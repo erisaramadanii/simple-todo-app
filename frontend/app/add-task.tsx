@@ -76,7 +76,6 @@ export default function AddTask() {
         style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <ScrollView
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
@@ -112,7 +111,6 @@ export default function AddTask() {
               <Text style={styles.buttonText}>{isSaving ? "Saving..." : "Save"}</Text>
             </TouchableOpacity>
           </ScrollView>
-        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

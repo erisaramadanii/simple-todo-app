@@ -15,6 +15,19 @@ export default function Home() {
   const insets = useSafeAreaInsets();
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const deleteTask = async (id: string) => {
+  try {
+    await fetch(`${API_URL}/tasks/${id}`, {
+      method: "DELETE",
+    });
+
+    // refresh listën pas fshirjes
+    setTasks((prev) => prev.filter((task) => task._id !== id));
+  } catch (err) {
+    console.log("Delete error:", err);
+  }
+};
+
   const fetchTasks = async () => {
     try {
       const res = await fetch(`${API_URL}/tasks`);
@@ -39,12 +52,20 @@ export default function Home() {
         data={tasks}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.desc}>{item.description}</Text>
-          </View>
-        )}
+       renderItem={({ item }) => (
+  <View style={styles.card}>
+    <Text style={styles.title}>{item.title}</Text>
+    <Text style={styles.desc}>{item.description}</Text>
+
+    <TouchableOpacity
+      onPress={() => deleteTask(item._id)}
+    >
+      <Text style={{ color: "red", marginTop: 10 }}>
+        Delete
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
       />
 
       <TouchableOpacity
