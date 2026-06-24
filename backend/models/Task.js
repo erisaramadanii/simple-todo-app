@@ -11,6 +11,11 @@ const taskSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    status: {
+      type: String,
+      enum: ["completed", "not_completed"],
+      default: "not_completed",
+    },
     completed: {
       type: Boolean,
       default: false,

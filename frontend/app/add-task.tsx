@@ -1,12 +1,10 @@
 import {
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   StyleSheet,
 } from "react-native";
 import { useState } from "react";

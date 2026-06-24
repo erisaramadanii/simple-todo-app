@@ -2,15 +2,22 @@ const express = require("express");
 const router = express.Router();
 const Task = require("../models/Task");
 
+const normalizeTaskResponse = (task) => {
+  const data = task.toObject ? task.toObject() : task;
+  const isCompleted = data.status === "completed" || data.completed === true;
 
-// ======================
-// GET ALL TASKS + SEARCH + FILTER
-// ======================
+  return {
+    ...data,
+    status: isCompleted ? "completed" : "not_completed",
+    completed: isCompleted,
+  };
+};
+
 router.get("/", async (req, res) => {
   try {
     const { search, status } = req.query;
 
-    let query = {};
+    const query = {};
 
     if (search) {
       query.title = {
@@ -20,25 +27,28 @@ router.get("/", async (req, res) => {
     }
 
     if (status === "completed") {
-      query.completed = true;
+      query.$or = [{ status: "completed" }, { completed: true }];
     }
 
-    if (status === "pending") {
-      query.completed = false;
+    if (status === "not_completed") {
+      query.$and = [
+        {
+          $or: [
+            { status: "not_completed" },
+            { status: { $exists: false }, completed: false },
+          ],
+        },
+      ];
     }
 
     const tasks = await Task.find(query).sort({ createdAt: -1 });
 
-    res.json(tasks);
+    res.json(tasks.map(normalizeTaskResponse));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-
-// ======================
-// GET SINGLE TASK
-// ======================
 router.get("/:id", async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -47,16 +57,12 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    res.json(task);
+    res.json(normalizeTaskResponse(task));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-
-// ======================
-// CREATE TASK
-// ======================
 router.post("/", async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -70,20 +76,49 @@ router.post("/", async (req, res) => {
     const task = new Task({
       title: title.trim(),
       description: description || "",
+      status: "not_completed",
+      completed: false,
     });
 
     const saved = await task.save();
-    res.status(201).json(saved);
-
+    res.status(201).json(normalizeTaskResponse(saved));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+router.patch("/:id", async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
 
-// ======================
-// TOGGLE COMPLETED
-// ======================
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    if (
+      req.body.status &&
+      !["completed", "not_completed"].includes(req.body.status)
+    ) {
+      return res.status(400).json({ message: "Invalid task status" });
+    }
+
+    if (req.body.status) {
+      task.status = req.body.status;
+      task.completed = req.body.status === "completed";
+    }
+
+    if (typeof req.body.completed === "boolean") {
+      task.completed = req.body.completed;
+      task.status = req.body.completed ? "completed" : "not_completed";
+    }
+
+    const updated = await task.save();
+    res.json(normalizeTaskResponse(updated));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.patch("/:id/toggle", async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -92,20 +127,17 @@ router.patch("/:id/toggle", async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    task.completed = !task.completed;
+    const isCompleted = task.status === "completed" || task.completed === true;
+    task.status = isCompleted ? "not_completed" : "completed";
+    task.completed = !isCompleted;
 
     const updated = await task.save();
-    res.json(updated);
-
+    res.json(normalizeTaskResponse(updated));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-
-// ======================
-// DELETE TASK
-// ======================
 router.delete("/:id", async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
@@ -115,7 +147,6 @@ router.delete("/:id", async (req, res) => {
     }
 
     res.json({ message: "Task deleted successfully" });
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
