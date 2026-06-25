@@ -21,6 +21,7 @@ type TaskCardProps = {
   task: Task;
   onToggle: (task: Task) => void;
   onDelete: (id: string) => void;
+  onOpenDetails: (id: string) => void;
 };
 
 const getStatus = (task: Task): TaskStatus => {
@@ -53,7 +54,12 @@ export function normalizeTask(task: Task): Task {
   };
 }
 
-export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onToggle,
+  onDelete,
+  onOpenDetails,
+}: TaskCardProps) {
   const status = getStatus(task);
   const isCompleted = status === "completed";
 
@@ -62,7 +68,7 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
       <Pressable onPress={() => onToggle(task)} style={styles.row}>
         <View style={styles.circleButton}>
           <View style={[styles.circle, isCompleted && styles.circleDone]}>
-            {isCompleted && <Text style={styles.check}>✓</Text>}
+            {isCompleted && <Text style={styles.check}>OK</Text>}
           </View>
         </View>
 
@@ -77,9 +83,15 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
         </View>
       </Pressable>
 
-      <TouchableOpacity onPress={() => onDelete(task._id)}>
-        <Text style={styles.delete}>Delete</Text>
-      </TouchableOpacity>
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={() => onOpenDetails(task._id)}>
+          <Text style={styles.details}>Details</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => onDelete(task._id)}>
+          <Text style={styles.delete}>Delete</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -104,9 +116,9 @@ const styles = StyleSheet.create({
     marginLeft: -10,
   },
   circle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     borderWidth: 2,
     borderColor: "#3b82f6",
     justifyContent: "center",
@@ -119,9 +131,8 @@ const styles = StyleSheet.create({
   },
   check: {
     color: "white",
-    fontSize: 14,
+    fontSize: 9,
     fontWeight: "700",
-    lineHeight: 18,
   },
   content: {
     flex: 1,
@@ -145,9 +156,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
   },
+  actions: {
+    flexDirection: "row",
+    gap: 18,
+    marginTop: 12,
+  },
+  details: {
+    color: "#3b82f6",
+    fontWeight: "600",
+  },
   delete: {
     color: "#f87171",
-    marginTop: 12,
     fontWeight: "600",
   },
 });

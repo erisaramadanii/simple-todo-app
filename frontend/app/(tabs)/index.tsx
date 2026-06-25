@@ -7,7 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { API_URL } from "../../config/api";
 import { TaskCard, normalizeTask, type Task } from "../../components/TaskCard";
@@ -21,6 +21,17 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<Filter>("not_completed");
   const [search, setSearch] = useState("");
+  const [advice, setAdvice] = useState("");
+
+  const fetchAdvice = async () => {
+    try {
+      const res = await fetch("https://api.adviceslip.com/advice");
+      const data = await res.json();
+      setAdvice(data.slip.advice);
+    } catch (err) {
+      console.log("Advice error:", err);
+    }
+  };
 
   const fetchTasks = async () => {
     try {
@@ -38,6 +49,10 @@ export default function Home() {
       fetchTasks();
     }, [])
   );
+
+  useEffect(() => {
+    fetchAdvice();
+  }, []);
 
   const deleteTask = async (id: string) => {
     try {
@@ -101,6 +116,13 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>My Tasks</Text>
 
+      {advice ? (
+        <View style={styles.adviceBox}>
+          <Text style={styles.adviceLabel}>Tip of the day</Text>
+          <Text style={styles.adviceText}>{advice}</Text>
+        </View>
+      ) : null}
+
       <TextInput
         placeholder="Search by title"
         placeholderTextColor="#94a3b8"
@@ -152,7 +174,14 @@ export default function Home() {
           </View>
         }
         renderItem={({ item }) => (
-          <TaskCard task={item} onToggle={toggleTask} onDelete={deleteTask} />
+          <TaskCard
+            task={item}
+            onToggle={toggleTask}
+            onDelete={deleteTask}
+            onOpenDetails={(id) =>
+              router.push({ pathname: "/task/[id]", params: { id } })
+            }
+          />
         )}
       />
 
@@ -185,6 +214,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: "white",
     marginBottom: 14,
+  },
+  adviceBox: {
+    backgroundColor: "#1e293b",
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 14,
+  },
+  adviceLabel: {
+    color: "#3b82f6",
+    fontWeight: "700",
+    marginBottom: 5,
+  },
+  adviceText: {
+    color: "#cbd5e1",
   },
   listContent: {
     flexGrow: 1,

@@ -21,7 +21,6 @@ export default function Layout() {
         name="index" 
         options={{ 
           title: "Home",
-          // 2. Shto funksionin e ikonës këtu:
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),

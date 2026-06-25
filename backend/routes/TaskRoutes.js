@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
     if (search) {
       query.title = {
         $regex: search,
-        $options: "i",
+        $options: "i", 
       };
     }
 

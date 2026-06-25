@@ -2,6 +2,12 @@
 
 A simple full-stack Todo app built with React Native, Node.js/Express, and MongoDB.
 
+## Description
+
+This app allows users to manage a small list of personal tasks. Users can add a task with a title and description, mark it as completed or not completed, delete it, search tasks by title, filter tasks by status, and open a simple details screen for each task.
+
+The app also fetches a daily advice message from a public API and displays it on the task list screen.
+
 ## Tech Stack
 
 - React Native with Expo
@@ -19,6 +25,8 @@ A simple full-stack Todo app built with React Native, Node.js/Express, and Mongo
 - Delete tasks
 - Search tasks by title
 - Filter tasks by status: To Do, Done, All
+- Simple task details screen
+- Fetch a daily advice from a public API
 - Empty state when there are no tasks
 - Created date for each task
 
@@ -26,12 +34,27 @@ A simple full-stack Todo app built with React Native, Node.js/Express, and Mongo
 
 Each task has:
 
--title
--description
--status (todo / done)
--completed (boolean)
--createdAt
--updatedAt
+- `title`: task title entered by the user
+- `description`: short task description entered by the user
+- `status`: completed or not completed
+- `completed`: boolean value used for task completion
+- `createdAt`: date when the task was created
+- `updatedAt`: date when the task was last updated
+
+## What Was Implemented
+
+- Task list screen
+- Add task screen
+- Task details screen
+- Mark task as completed / not completed
+- Delete task
+- Basic input validation
+- Empty state
+- Search by title
+- Filter by status
+- Public API fetch using Advice Slip API
+- Simple navigation between screens
+- MongoDB database storage through a Node.js/Express backend
 
 ## Project Structure
 
@@ -44,6 +67,7 @@ backend/
 frontend/
   app/(tabs)/index.tsx
   app/add-task.tsx
+  app/task/[id].tsx
   components/TaskCard.tsx
   config/api.ts
 ```
@@ -89,7 +113,8 @@ Set the API URL in `frontend/config/api.ts`:
 ```ts
 export const API_URL = "http://YOUR_LOCAL_IP:5000";
 ```
-# Screenshots
+
+## Screenshots
 
 <p align="center">
   <img src="frontend/screenshots/IMG_2455.png" width="180"/>
@@ -97,7 +122,5 @@ export const API_URL = "http://YOUR_LOCAL_IP:5000";
   <img src="frontend/screenshots/IMG_2458.png" width="180"/>
   <img src="frontend/screenshots/IMG_2459.png" width="180"/>
 </p>
-
-
 
 
