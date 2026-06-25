@@ -117,10 +117,10 @@ export const API_URL = "http://YOUR_LOCAL_IP:5000";
 ## Screenshots
 
 <p align="center">
-  <img src="frontend/screenshots/IMG_2455.png" width="180"/>
-  <img src="frontend/screenshots/IMG_2456.png" width="180"/>
-  <img src="frontend/screenshots/IMG_2458.png" width="180"/>
-  <img src="frontend/screenshots/IMG_2459.png" width="180"/>
+  <img src="frontend/screenshots/IMG_2460.png" width="180"/>
+  <img src="frontend/screenshots/IMG_2461.png" width="180"/>
+  <img src="frontend/screenshots/IMG_2462.png" width="180"/>
+  <img src="frontend/screenshots/IMG_2463.png" width="180"/>
 </p>
 
 
